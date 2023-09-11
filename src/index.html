@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Daily Earthquake Map</title>
+    </head>
+    <body>
+        <h1>Daily Earthquake Map</h1>
+        <p>Last refreshed at <span id="refreshTime"></span>.</p>
+        <script>
+            var refreshTime = document.getElementById('refreshTime');
+
+            function refresh() {
+                var loadTime = new Date();
+                refreshTime.innerText = loadTime.toLocaleTimeString();
+            }
+
+            refresh();
+            setInterval(refresh, 60000);
+        </script>
+    </body>
+</html>
