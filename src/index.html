@@ -4,12 +4,29 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Daily Earthquake Map</title>
+        <link rel="stylesheet" href="leaflet/leaflet.min.css" />
+        <link rel="stylesheet" href="leaflet/fullscreen/leaflet.fullscreen.min.css" />
     </head>
     <body>
         <h1>Daily Earthquake Map</h1>
         <p>Last refreshed: <span id="refreshTime"></span>.</p>
         <p>Data published: <span id="dataRefresh"></span>.</p>
-        <p id="dataStats"></p>
+        <p id="dataStats" style="visibility: hidden;">Received 0 earthquakes.</p>
+        <div id="map" style="height: 720px;"></div>
+        <script src="leaflet/leaflet.js"></script>
+        <script src="leaflet/fullscreen/Leaflet.fullscreen.min.js"></script>
+        <script>
+            const map = L.map(
+                'map', { zoomSnap: 0.5, preferCanvas: true, fullscreenControl: true }
+            ).setView([55.7, -3.2], 5.5);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 13,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            var dataLayer = L.geoJSON().addTo(map);
+        </script>
         <script>
             // Find elements to update
             var refreshTime = document.getElementById('refreshTime');
@@ -36,6 +53,11 @@
 
                         // Update the number of earthquakes
                         dataStats.innerText = `Received ${data.metadata.count} earthquakes.`;
+                        dataStats.style.visibility = 'visible';
+
+                        // Update map with GeoJSON
+                        dataLayer.clearLayers();
+                        dataLayer.addData(data);
                     }, () => {
                         // If getting the data was unsuccessful, show an error
                         dataRefresh.innerText = 'Error connecting to USGS data source';
