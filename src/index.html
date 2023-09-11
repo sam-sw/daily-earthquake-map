@@ -7,15 +7,47 @@
     </head>
     <body>
         <h1>Daily Earthquake Map</h1>
-        <p>Last refreshed at <span id="refreshTime"></span>.</p>
+        <p>Last refreshed: <span id="refreshTime"></span>.</p>
+        <p>Data published: <span id="dataRefresh"></span>.</p>
+        <p id="dataStats"></p>
         <script>
+            // Find elements to update
             var refreshTime = document.getElementById('refreshTime');
+            var dataRefresh = document.getElementById('dataRefresh');
+            var dataStats = document.getElementById('dataStats');
 
-            function refresh() {
-                var loadTime = new Date();
-                refreshTime.innerText = loadTime.toLocaleTimeString();
+            // Get the GeoJSON earthquake data
+            async function getEarthquakes() {
+                return fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
+                    .then((response) => {
+                        if (!response.ok) {
+                            return Promise.reject(response);
+                        }
+                        return response.json();
+                    });
             }
 
+            function refresh() {
+                getEarthquakes()
+                    .then((data) => {
+                        // If getting the data was successful, update the generated time
+                        var dataTime = new Date(data.metadata.generated);
+                        dataRefresh.innerText = dataTime.toLocaleString();
+
+                        // Update the number of earthquakes
+                        dataStats.innerText = `Received ${data.metadata.count} earthquakes.`;
+                    }, () => {
+                        // If getting the data was unsuccessful, show an error
+                        dataRefresh.innerText = 'Error connecting to USGS data source';
+                    })
+                        .then(() => {
+                            // Once we've processed the data, update the refresh time
+                            var loadTime = new Date();
+                            refreshTime.innerText = loadTime.toLocaleString();
+                        });
+            }
+
+            // Refresh the data and continue to do so every 60s
             refresh();
             setInterval(refresh, 60000);
         </script>
