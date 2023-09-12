@@ -29,12 +29,18 @@
                 border-radius: 0.5em;
             }
 
-            div.info h1 {
-                font-size: 1.3rem;
-            }
-
             div.info *, div.leaflet-popup-content * {
                 margin: 0;
+                text-align: center;
+            }
+
+            div.info h1 {
+                font-size: 1.3rem;
+                padding-bottom: 0.5rem;
+            }
+
+            div.info p {
+                font-size: 1.2em;
             }
 
             div.leaflet-popup-content {
@@ -57,8 +63,15 @@
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 10,
-                attribution: 'Map Tiles © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>. Earthquake data courtesy of the <a href="https://usgs.gov">U.S. Geological Survey</a>. Website © Samuel Wood. All rights reserved.'
+                attribution: 'Basemap © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>. Earthquake <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">data</a> courtesy of the <a href="https://usgs.gov">U.S. Geological Survey</a>. <a href="https://github.com/fraxen/tectonicplates">Plate boundaries</a> thanks to H. Ahlenius, Nordpil, and P. Bird; licensed under the <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-BY</a>. Website © Samuel Wood. All rights reserved.'
             }).addTo(map);
+
+            var platesLayer = L.geoJSON([], {
+                style: {weight: 2, opacity: 1, color: '#555'},
+            }).addTo(map);
+            platesLayer.on('add', (event) => {
+                platesLayer.bringToBack();
+            });
 
             const day = new Date(24 * 60 * 60 * 1000);
 
@@ -69,20 +82,45 @@
 
                     return L.circleMarker(latlng, {
                         radius: 2 + (geoJsonPoint.properties.mag / 10) * 28,
-                        fillOpacity: 1 - 0.8 * ((now - earthquake) / day),
+                        fillOpacity: 0.8 - 0.6 * ((now - earthquake) / day),
                         weight: 0,
-                        fillColor: '#D50000',
+                        fillColor: '#D50000'
                     }).bindPopup(`<h2>${geoJsonPoint.properties.title}</h2><p>${earthquake.toLocaleString()}</p>`);
                 }
             }).addTo(map);
+            dataLayer.on('add', (event) => {
+                dataLayer.bringToFront();
+            });
+
+            var layerControl = L.control.layers({}, {
+                'Daily Earthquakes': dataLayer,
+                'Plate Boundaries': platesLayer
+            }).addTo(map);
+            layerControl.setPosition('bottomright');
 
             var infoBox = L.control({position: 'topright'});
             infoBox.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'info');
-                div.innerHTML = '<h1>Daily Earthquake Map</h1><hr/><p>Last refreshed: <span id="refreshTime">never</span>.</p><p>Data published: <span id="dataRefresh">unknown</span>.</p><p id="dataStats">Loading...</p><hr/><p>more opaque = more recent</p><p>larger size = larger magnitude</p>';
+                div.innerHTML = '<h1>Daily Earthquake Map</h1><hr/><p>Last refreshed: <span id="refreshTime">never</span></p><p>Data published: <span id="dataRefresh">unknown</span></p><p id="dataStats">Loading...</p><hr/><p>more opaque = more recent</p><p>larger size = larger magnitude</p><p><a role="button" id="openCredits">Credits</a><p>';
                 return div;
             }
             infoBox.addTo(map);
+
+            var scale = L.control.scale({position: 'topleft'}).addTo(map);
+        </script>
+        <script>
+            fetch('plates/boundaries.json')
+                .then((response) => {
+                    if (!response.ok) {
+                        return Promise.reject(response);
+                    }
+                    return response.json();
+                })
+                    .then((data) => {
+                        platesLayer.addData(data);
+                    }, () => {
+                        console.error('Error getting plate tectonics data.');
+                    });
         </script>
         <script>
             // Find elements to update
@@ -116,7 +154,7 @@
                         dataLayer.addData(data);
                     }, () => {
                         // If getting the data was unsuccessful, show an error
-                        dataStats.innerText = 'Error connecting to USGS data source';
+                        dataStats.innerText = 'Error connecting to USGS data source.';
                     })
                         .then(() => {
                             // Once we've processed the data, update the refresh time
