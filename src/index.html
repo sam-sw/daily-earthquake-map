@@ -6,23 +6,58 @@
         <title>Daily Earthquake Map</title>
         <link rel="stylesheet" href="leaflet/leaflet.min.css" />
         <link rel="stylesheet" href="leaflet/fullscreen/leaflet.fullscreen.min.css" />
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+            }
+
+            html * { font-family: Inter, Helvetica, sans-serif !important; }
+
+            body {
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            header {
+                padding: 1em;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            header p {
+                font-size: 1rem;
+                margin: 0.5em;
+                padding: 0;
+            }
+
+            main { flex-grow: 1; }
+
+            #map { height: 100%; }
+        </style>
     </head>
     <body>
-        <h1>Daily Earthquake Map</h1>
-        <p>Last refreshed: <span id="refreshTime"></span>.</p>
-        <p>Data published: <span id="dataRefresh"></span>.</p>
-        <p id="dataStats" style="visibility: hidden;">Received 0 earthquakes.</p>
-        <div id="map" style="height: 720px;"></div>
+        <header>
+            <h1>Daily Earthquake Map</h1>
+            <p>Last refreshed: <span id="refreshTime">never</span>, data published: <span id="dataRefresh">unknown</span>.</p>
+            <p id="dataStats">Loading...</p>
+        </header>
+        <main><div id="map" style="min-height: 500px;"></div></main>
         <script src="leaflet/leaflet.js"></script>
         <script src="leaflet/fullscreen/Leaflet.fullscreen.min.js"></script>
         <script>
             const map = L.map(
                 'map', { zoomSnap: 0.5, preferCanvas: true, fullscreenControl: true }
-            ).setView([55.7, -3.2], 5.5);
+            ).setView([20.0, 0.0], 2.5);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 13,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                maxZoom: 10,
+                attribution: 'Map Tiles © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>. Earthquake data courtesy of the <a href="https://usgs.gov">U.S. Geological Survey</a>. Website © Samuel Wood. All rights reserved.'
             }).addTo(map);
 
             var dataLayer = L.geoJSON().addTo(map);
@@ -53,14 +88,13 @@
 
                         // Update the number of earthquakes
                         dataStats.innerText = `Received ${data.metadata.count} earthquakes.`;
-                        dataStats.style.visibility = 'visible';
 
                         // Update map with GeoJSON
                         dataLayer.clearLayers();
                         dataLayer.addData(data);
                     }, () => {
                         // If getting the data was unsuccessful, show an error
-                        dataRefresh.innerText = 'Error connecting to USGS data source';
+                        dataStats.innerText = 'Error connecting to USGS data source';
                     })
                         .then(() => {
                             // Once we've processed the data, update the refresh time
