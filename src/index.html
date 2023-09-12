@@ -15,45 +15,37 @@
             html * { font-family: Inter, Helvetica, sans-serif !important; }
 
             body {
+                width: 100vw;
                 height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+                overflow: hidden;
             }
 
-            header {
+            #map { width: 100%; height: 100%; }
+
+            div.info {
+                text-align: right;
                 padding: 1em;
-                text-align: center;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 0.5em;
             }
 
-            header h1 {
-                font-size: 1.5rem;
+            div.info h1 {
+                font-size: 1.3rem;
             }
 
-            header p {
-                font-size: 1rem;
-                margin: 0.5em;
-                padding: 0;
+            div.info * {
+                margin: 0;
             }
-
-            main { flex-grow: 1; }
-
-            #map { height: 100%; }
         </style>
     </head>
     <body>
-        <header>
-            <h1>Daily Earthquake Map</h1>
-            <p>Last refreshed: <span id="refreshTime">never</span>, data published: <span id="dataRefresh">unknown</span>.</p>
-            <p id="dataStats">Loading...</p>
-        </header>
-        <main><div id="map" style="min-height: 500px;"></div></main>
+        <div id="map" style="min-height: 500px;"></div>
         <script src="leaflet/leaflet.js"></script>
         <script src="leaflet/fullscreen/Leaflet.fullscreen.min.js"></script>
         <script>
             const map = L.map(
                 'map', { zoomSnap: 0.5, preferCanvas: true, fullscreenControl: true }
-            ).setView([20.0, 0.0], 2.5);
+            ).setView([35.0, 0.0], 2.5);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 10,
@@ -61,6 +53,14 @@
             }).addTo(map);
 
             var dataLayer = L.geoJSON().addTo(map);
+
+            var infoBox = L.control({position: 'topright'});
+            infoBox.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info');
+                div.innerHTML = '<h1>Daily Earthquake Map</h1><p>Last refreshed: <span id="refreshTime">never</span>.</p><p>Data published: <span id="dataRefresh">unknown</span>.</p><p id="dataStats">Loading...</p>';
+                return div;
+            }
+            infoBox.addTo(map);
         </script>
         <script>
             // Find elements to update
