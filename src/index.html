@@ -33,8 +33,16 @@
                 font-size: 1.3rem;
             }
 
-            div.info * {
+            div.info *, div.leaflet-popup-content * {
                 margin: 0;
+            }
+
+            div.leaflet-popup-content {
+                margin: 0.5rem;
+            }
+
+            div.leaflet-popup-content h2 {
+                font-size: 1rem;
             }
         </style>
     </head>
@@ -52,12 +60,26 @@
                 attribution: 'Map Tiles © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>. Earthquake data courtesy of the <a href="https://usgs.gov">U.S. Geological Survey</a>. Website © Samuel Wood. All rights reserved.'
             }).addTo(map);
 
-            var dataLayer = L.geoJSON().addTo(map);
+            const day = new Date(24 * 60 * 60 * 1000);
+
+            var dataLayer = L.geoJSON([], {
+                pointToLayer: function (geoJsonPoint, latlng) {
+                    var now = new Date();
+                    var earthquake = new Date(geoJsonPoint.properties.time);
+
+                    return L.circleMarker(latlng, {
+                        radius: 2 + (geoJsonPoint.properties.mag / 10) * 28,
+                        fillOpacity: 1 - 0.8 * ((now - earthquake) / day),
+                        weight: 0,
+                        fillColor: '#D50000',
+                    }).bindPopup(`<h2>${geoJsonPoint.properties.title}</h2><p>${earthquake.toLocaleString()}</p>`);
+                }
+            }).addTo(map);
 
             var infoBox = L.control({position: 'topright'});
             infoBox.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'info');
-                div.innerHTML = '<h1>Daily Earthquake Map</h1><p>Last refreshed: <span id="refreshTime">never</span>.</p><p>Data published: <span id="dataRefresh">unknown</span>.</p><p id="dataStats">Loading...</p>';
+                div.innerHTML = '<h1>Daily Earthquake Map</h1><hr/><p>Last refreshed: <span id="refreshTime">never</span>.</p><p>Data published: <span id="dataRefresh">unknown</span>.</p><p id="dataStats">Loading...</p><hr/><p>more opaque = more recent</p><p>larger size = larger magnitude</p>';
                 return div;
             }
             infoBox.addTo(map);
