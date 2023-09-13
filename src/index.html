@@ -25,6 +25,7 @@
             .leaflet-control-layers-toggle { background-image: url(feather/layers.svg) !important; }
 
             div#info {
+                display: none;
                 position: absolute;
                 right: 1em;
                 top: 1em;
@@ -228,6 +229,9 @@
 
             // Add a dynamic scale to the map
             L.control.scale({position: 'topleft'}).addTo(map);
+
+            // Show the title/info box
+            document.getElementById('info').style = 'display: block;';
 
             // Add a layer for the tectonic plate boundaries
             var platesLayer = L.geoJSON([], {
