@@ -3,6 +3,7 @@
 from pathlib import Path
 from shutil import copytree
 from sys import argv
+from typing import Optional
 
 from minify_html import minify as _minify
 
@@ -31,13 +32,13 @@ def minify(src: Path, dst: Path):
             )
 
 
-def build(src: Path, dst: Path, static: list[Path]):
+def build(src: Path, dst: Path, static: Optional[Path] = None):
     """Build a site by minifying or copying files to a build directory.
 
     Takes all files within the ``src`` directory, minifies them, and copies the
-    results to the same location within the ``dst`` directory. Copies each
-    supplied ``static`` directory inside the top-level of the ``dst``
-    directory.
+    results to the same location within the ``dst`` directory. Copies the
+    contents of an optionally-supplied ``static`` directory inside the
+    top-level of the ``dst`` directory.
 
     Parameters
     ----------
@@ -45,39 +46,42 @@ def build(src: Path, dst: Path, static: list[Path]):
         Path to the source directory.
     dst : pathlib.Path
         Path to the destination (build) directory.
-    static : list of pathlib.Path
-        List of paths to static directories. Can be an empty list.
+    static : pathlib.Path, optional
+        Path to static directory. Defaults to None.
 
     Raises
     ------
     TypeError
-        If the source, destination, or any of the static paths are not
-        pathlib.Path objects.
+        If the source, destination, or static paths are not pathlib.Path
+        objects.
     NotADirectoryError
-        If the source, destination, or any of the static paths are not
-        directories.
+        If the source, destination, or static paths are not directories.
     ValueError
         If any paths contain '..'.
     """
     try:
         # Check parameters have correct types (pathlib.Path)
         assert isinstance(src, Path)
-        assert isinstance(static, list) or isinstance(static, tuple)
-        assert all([isinstance(s, Path) for s in static])
         assert isinstance(dst, Path)
+        assert isinstance(static, Path) or static is None
     except:
         raise TypeError(
-            'Source, list/tuple of static, and destination paths must all be'
-            'pathlib.Path objects.'
+            'Source, destination, and static paths must all be pathlib.Path objects.'
         )
 
-    if not (src.is_dir() and all([s.is_dir() for s in static]) and dst.is_dir()):
-        # Check paths are all directories
-        raise NotADirectoryError(
-            'Source, static, and destination paths must point to directories.'
-        )
+    # Check paths are all directories
+    if not (src.is_dir() and dst.is_dir()):
+        if static:
+            if not static.is_dir():
+                raise NotADirectoryError(
+                    'Source, destination, and static paths must point to directories.'
+                )
+        else:
+                raise NotADirectoryError(
+                    'Source, destination, and static paths must point to directories.'
+                )
 
-    if any(['..' in str(s) for s in static]) or '..' in str(dst):
+    if '..' in str(static) or '..' in str(dst):
         # Check paths don't contain any dodgy .. patterns
         raise ValueError('Static and destination paths must not contain \'..\'.')
 
@@ -90,8 +94,8 @@ def build(src: Path, dst: Path, static: list[Path]):
     _ = [minify(s, d) for s, d in zip(src_paths, dst_paths)]
 
     # Copy all static directories
-    dst_static_paths = [dst / p.name for p in static]
-    _ = [copytree(s, d, dirs_exist_ok=False) for s, d in zip(static, dst_static_paths)]
+    if static:
+        copytree(static, dst, dirs_exist_ok=True)
 
 
 if __name__ == '__main__':
@@ -100,17 +104,21 @@ if __name__ == '__main__':
         raise ValueError(
             'Require at least two arguments: source and destination directories.'
         )
+    if len(argv) > 4:
+        raise ValueError(
+            'Require at most three arguments: source, destination, and static directories.'
+        )
 
     # Make sure we have pathlib.Path objects
     try:
         src = Path(argv[1])
         dst = Path(argv[2])
-        if len(argv) > 3:
-            static = [Path(a) for a in argv[3:]]
+        if len(argv) == 4:
+            static = Path(argv[3])
         else:
-            static = []
+            static = None
     except:
         raise TypeError('Could not parse arguments.')
 
     # Build the directory
-    build(src, dst, static)
+    build(src, dst, static=static)
