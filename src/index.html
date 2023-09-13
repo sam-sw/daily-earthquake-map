@@ -41,7 +41,7 @@
                 div.info h1 { font-size: 1.1rem; padding-bottom: 0.5rem; }
                 div.info p { font-size: 1.1em; }
 
-                #credits main { max-width: 90%; }
+                #credits main, noscript div main { max-width: 90%; }
             }
 
             @media (min-width: 900px) {
@@ -49,7 +49,7 @@
                 div.info h1 { font-size: 1.3rem; padding-bottom: 0.5rem; }
                 div.info p { font-size: 1.2em; }
 
-                #credits main { max-width: 720px; }
+                #credits main, noscript div main { max-width: 720px; }
             }
 
             div.info #timesContainer { visibility: hidden; }
@@ -71,7 +71,7 @@
 
             .leaflet-control-attribution a:hover, div.info a:hover, #credits a:hover { text-decoration: none; }
 
-            #credits {
+            #credits, noscript div {
                 display: none;
                 flex-direction: row;
                 justify-content: center;
@@ -84,20 +84,30 @@
                 z-index: 100000;
             }
 
-            #credits main {
+            noscript div { display: flex; text-align: center; }
+
+            #credits main, noscript div main {
                 align-self: center;
                 max-height: 90%;
                 background: #fff;
                 border-radius: 0.5em;
             }
 
-            #credits main>* { padding: 0 1rem; }
+            #credits main>*, noscript div main>* { padding: 0 1rem; }
 
             #openCredits, #closeCredits, #resetZoom { cursor: pointer; }
         </style>
     </head>
     <body>
-        <div id="map" style="min-height: 500px;"></div>
+        <noscript>
+            <div>
+                <main>
+                    <h1>Please Enable Javascript</h1>
+                    <p>Daily Earthquake Map requires Javascript to run. Please enable it in your browser settings, and then refresh this page.</p>
+                </main>
+            </div>
+        </noscript>
+        <div id="map"></div>
         <div id="credits">
             <main>
                 <h2>Credits</h2>
