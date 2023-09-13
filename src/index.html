@@ -10,9 +10,10 @@
         <link rel="dns-prefetch" href="https://earthquake.usgs.gov/" />
         <link rel="stylesheet" href="inter/inter.min.css" />
         <link rel="stylesheet" href="leaflet/leaflet.min.css" />
-        <link rel="preload" as="image" href="feather/layers.svg" />
+        <link rel="preload" as="image" href="feather/crosshair.svg" />
         <link rel="preload" as="image" href="feather/maximise.svg" />
         <link rel="preload" as="image" href="feather/minimise.svg" />
+        <link rel="preload" as="image" href="feather/layers.svg" />
         <title>Daily Earthquake Map</title>
         <style>
             html, body { margin: 0; padding: 0; }
@@ -127,9 +128,7 @@
             <p>more opaque = more recent</p>
             <p>larger size = larger magnitude</p>
             <hr/>
-            <p><b>Disclaimer</b>: we cannot and do not guarantee the accuracy of this site.</p>
-            <hr/>
-            <p id="links"><a role="button" id="openCredits">Credits</a><a role="button" id="resetZoom">Rescale</a><p>
+            <p><b>Disclaimer</b>: we cannot and do not guarantee the accuracy of this website. See <a role="button" id="openCredits">credits</a> for data sources and licenses.</p>
         </div>
         <div id="map"></div>
         <div id="credits">
@@ -150,10 +149,40 @@
             const defaultView = [35.0, 0.0];
             const defaultZoom = 2.5;
 
+            const bounds = L.latLngBounds(
+                L.latLng(-90, -270),
+                L.latLng(90, 270)
+            );
+
             // Create leaflet map and set its view
             const map = L.map(
-                'map', { zoomSnap: 0.5, preferCanvas: true }
+                'map', { zoomSnap: 0.5, preferCanvas: true, maxBounds: bounds }
             ).setView(defaultView, defaultZoom);
+
+            // Add the OpenStreetMap basemap and data attribution
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 10,
+                attribution: 'Basemap © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> and contributors. Earthquake <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">data</a> courtesy of the <a href="https://usgs.gov">U.S. Geological Survey</a>. <a href="https://github.com/fraxen/tectonicplates">Plate boundaries</a> thanks to H. Ahlenius, Nordpil, and P. Bird; licensed under the <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-BY</a> (<a href="plates/LICENSE.txt">local plain text copy</a>). Website © Samuel Wood. All rights reserved.'
+            }).addTo(map);
+
+            // Add button to rescale the map
+            var rescaleMap = L.control({position: 'topleft'});
+            rescaleMap.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                var a = L.DomUtil.create('a', '', div);
+                a.removeAttribute('href');
+                a.removeAttribute('class');
+                a.setAttribute('role', 'button');
+                a.setAttribute('title', 'Rescale map');
+                a.style = 'background-image: url(\'feather/crosshair.svg\');';
+
+                L.DomEvent.on(a, 'click', (link) => {
+                    map.setView(defaultView, defaultZoom);
+                }, a);
+
+                return div;
+            }
+            rescaleMap.addTo(map);
 
             // Add button to toggle fullscreen
             var toggleFullscreen = L.control({position: 'topleft'});
@@ -202,11 +231,8 @@
             }
             toggleFullscreen.addTo(map);
 
-            // Add the OpenStreetMap basemap and data attribution
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 10,
-                attribution: 'Basemap © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> and contributors. Earthquake <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">data</a> courtesy of the <a href="https://usgs.gov">U.S. Geological Survey</a>. <a href="https://github.com/fraxen/tectonicplates">Plate boundaries</a> thanks to H. Ahlenius, Nordpil, and P. Bird; licensed under the <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-BY</a> (<a href="plates/LICENSE.txt">local plain text copy</a>). Website © Samuel Wood. All rights reserved.'
-            }).addTo(map);
+            // Add a dynamic scale to the map
+            var scale = L.control.scale({position: 'topleft'}).addTo(map);
 
             // Add a layer for the tectonic plate boundaries
             var platesLayer = L.geoJSON([], {
@@ -249,15 +275,6 @@
                 'Plate Boundaries': platesLayer
             }).addTo(map);
             layerControl.setPosition('bottomright');
-
-            // Add a dynamic scale to the map
-            var scale = L.control.scale({position: 'topleft'}).addTo(map);
-
-            // Get the reset-zoom button (hiding as an anchor) and reset the map view when it's clicked
-            var resetZoom = document.getElementById('resetZoom');
-            resetZoom.addEventListener('click', () => {
-                map.setView(defaultView, defaultZoom)
-            });
 
             // Get the buttons (hiding as anchors) for opening and closing the credits
             var openCredits = document.getElementById('openCredits');
