@@ -28,52 +28,56 @@
 
             .leaflet-control-layers-toggle { background-image: url(feather/layers.svg) !important; }
 
-            div.info {
+            div#info {
+                position: absolute;
+                right: 1em;
+                top: 1em;
                 text-align: right;
-                padding: 1em;
                 background: rgba(255, 255, 255, 0.8);
                 border-radius: 0.5em;
+                z-index: 10000;
             }
 
-            div.info *, div.leaflet-popup-content * {
+            div#info *, div.leaflet-popup-content * {
                 margin: 0;
                 text-align: center;
             }
 
+            div#info h1 { padding-bottom: 0 !important; }
+
             @media (max-width: 900px) {
-                div.info { width: 250px; }
-                div.info h1 { font-size: 1.1rem; padding-bottom: 0.5rem; }
-                div.info p { font-size: 1.1em; }
+                div#info { width: 225px; right: 0.8em; top: 0.8em; padding: 0.5em; }
+                div#info hr { margin: 0.3rem 0; }
+                div#info h1 { font-size: 1rem; padding-bottom: 0.7rem; }
+                div#info p { font-size: 0.83rem; }
 
                 #credits main, noscript div main { max-width: 90%; }
             }
 
             @media (min-width: 900px) {
-                div.info { width: 270px; }
-                div.info h1 { font-size: 1.3rem; padding-bottom: 0.5rem; }
-                div.info p { font-size: 1.2em; }
+                div#info { width: 240px; padding: 1em; }
+                div#info hr { margin: 0.5rem 0; }
+                div#info h1 { font-size: 1.3rem; }
+                div#info p { font-size: 0.9rem; }
 
                 #credits main, noscript div main { max-width: 720px; }
             }
 
-            div.info #timesContainer { visibility: hidden; }
-            div.info #timesContainer p { text-align: right !important; }
-            div.info #refreshTime, div.info #dataRefresh { font-variant-numeric: tabular-nums; }
-
-            div.info hr { border: 0; border-top: 1px solid #000; }
-
-            div.info #links { padding-top: 0.4em; }
-            div.info a { font-size: 1.2em; padding: 1em; }
+            div#info hr { border: 0; border-top: 1px solid #000; }
+            div#info #timesContainer { visibility: hidden; }
+            div#info #timesContainer p { text-align: right !important; }
+            div#info #refreshTime, div#info #dataRefresh { font-variant-numeric: tabular-nums; }
+            div#info #links a { font-size: 1.2em; padding: 1em; }
 
             div.leaflet-popup-content { margin: 0.5rem; }
             div.leaflet-popup-content h2 { font-size: 1rem; }
 
-            .leaflet-control-attribution a, div.info a, #credits a {
+            .leaflet-control-attribution a, div#info a, #credits a {
                 color: inherit;
                 text-decoration: underline;
             }
 
-            .leaflet-control-attribution a:hover, div.info a:hover, #credits a:hover { text-decoration: none; }
+            .leaflet-control-attribution a:hover, div#info a:hover, #credits a:hover { text-decoration: none; }
 
             #credits, noscript div {
                 display: none;
@@ -99,7 +103,7 @@
 
             #credits main>*, noscript div main>* { padding: 0 1rem; }
 
-            #openCredits, #closeCredits, #resetZoom { cursor: pointer; }
+            a[role=button] { cursor: pointer; }
         </style>
     </head>
     <body>
@@ -111,6 +115,22 @@
                 </main>
             </div>
         </noscript>
+        <div id="info">
+            <h1>Daily Earthquake Map</h1>
+            <hr/>
+            <div id="timesContainer">
+                <p>Refreshed: <span id="refreshTime">never</span></p>
+                <p>Data from: <span id="dataRefresh">unknown</span></p>
+            </div>
+            <p id="dataStats">Loading...</p>
+            <hr/>
+            <p>more opaque = more recent</p>
+            <p>larger size = larger magnitude</p>
+            <hr/>
+            <p><b>Disclaimer</b>: we cannot and do not guarantee the accuracy of this site.</p>
+            <hr/>
+            <p id="links"><a role="button" id="openCredits">Credits</a><a role="button" id="resetZoom">Rescale</a><p>
+        </div>
         <div id="map"></div>
         <div id="credits">
             <main>
@@ -135,12 +155,15 @@
                 'map', { zoomSnap: 0.5, preferCanvas: true }
             ).setView(defaultView, defaultZoom);
 
-            // Add the title/info box
+            // Add button to toggle fullscreen
             var toggleFullscreen = L.control({position: 'topleft'});
             toggleFullscreen.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
                 var a = L.DomUtil.create('a', '', div);
-                a.href = '#';
+                a.removeAttribute('href');
+                a.removeAttribute('class');
+                a.setAttribute('role', 'button');
+                a.setAttribute('title', 'Toggle fullscreen');
                 a.style = 'background-image: url(\'feather/maximise.svg\');';
 
                 L.DomEvent.on(a, 'click', (link) => {
@@ -226,15 +249,6 @@
                 'Plate Boundaries': platesLayer
             }).addTo(map);
             layerControl.setPosition('bottomright');
-
-            // Add the title/info box
-            var infoBox = L.control({position: 'topright'});
-            infoBox.onAdd = function (map) {
-                var div = L.DomUtil.create('div', 'info');
-                div.innerHTML = '<h1>Daily Earthquake Map</h1><hr/><div id="timesContainer"><p>Last refreshed: <span id="refreshTime">never</span></p><p>Data published: <span id="dataRefresh">unknown</span></p></div><p id="dataStats">Loading...</p><hr/><p>more opaque = more recent</p><p>larger size = larger magnitude</p><hr/><p><b>Disclaimer</b>: we cannot and do not guarantee the accuracy of this site.</p><hr/><p id="links"><a role="button" id="openCredits">Credits</a><a role="button" id="resetZoom">Rescale</a><p>';
-                return div;
-            }
-            infoBox.addTo(map);
 
             // Add a dynamic scale to the map
             var scale = L.control.scale({position: 'topleft'}).addTo(map);
