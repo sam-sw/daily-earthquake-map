@@ -184,7 +184,7 @@
             var infoBox = L.control({position: 'topright'});
             infoBox.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'info');
-                div.innerHTML = '<h1>Daily Earthquake Map</h1><hr/><div id="timesContainer"><p>Last refreshed: <span id="refreshTime">never</span></p><p>Data published: <span id="dataRefresh">unknown</span></p></div><p id="dataStats">Loading...</p><hr/><p>more opaque = more recent</p><p>larger size = larger magnitude</p><hr/><p id="links"><a role="button" id="openCredits">Credits</a><a role="button" id="resetZoom">Rescale</a><p>';
+                div.innerHTML = '<h1>Daily Earthquake Map</h1><hr/><div id="timesContainer"><p>Last refreshed: <span id="refreshTime">never</span></p><p>Data published: <span id="dataRefresh">unknown</span></p></div><p id="dataStats">Loading...</p><hr/><p>more opaque = more recent</p><p>larger size = larger magnitude</p><hr/><p><b>Disclaimer</b>: we cannot and do not guarantee the accuracy of this site.</p><hr/><p id="links"><a role="button" id="openCredits">Credits</a><a role="button" id="resetZoom">Rescale</a><p>';
                 return div;
             }
             infoBox.addTo(map);
