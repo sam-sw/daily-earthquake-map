@@ -213,7 +213,7 @@
 
             // Get the GeoJSON plate boundaries
             async function loadBoundaries() {
-                fetch('plates/boundaries.json')
+                fetch('plates/boundaries.min.json')
                     .then((response) => {
                         if (!response.ok) {
                             return Promise.reject(response);
