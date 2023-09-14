@@ -314,6 +314,7 @@
                         .then((data) => {
                             // If loaded OK, add to map
                             platesLayer.addData(data);
+                            platesLayer.bringToBack();
                         }, () => {
                             console.error('Error getting plate tectonics data.');
                         });
@@ -343,6 +344,7 @@
                         // Update map with GeoJSON
                         dataLayer.clearLayers();
                         dataLayer.addData(data);
+                        dataLayer.bringToFront();
                     }, () => {
                         // If getting the data was unsuccessful, show an error
                         dataStats.innerText = 'Error connecting to USGS data source.';
