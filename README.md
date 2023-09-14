@@ -1,10 +1,11 @@
 # Daily Earthquake Map
 
-Using data sourced from the USGS, a live-updating map of all earthquakes
-detected in the last day is produced.
+Live, minute-by-minute data from the [U.S. Geological Survey](https://usgs.gov)
+plotted on an interactive map, showing earthquakes from the last day across the
+globe.
 
 
-## Installation
+## Building
 
 Daily Earthquake Map is a static website, so only needs a web server to serve
 its files. This repository has separated 'minifiable' files (HTML, CSS, JS,
@@ -14,6 +15,7 @@ a single directory that can be served with a web server, either:
 1. Copy the contents of `src/` and `static/` to a chosen output directory.
 2. Use the provided Python `build.py` script. This has the added benefit of
     minifying source files.
+
 
 ### The Python `build.py` Script
 
@@ -45,15 +47,15 @@ python -m pip install --upgrade pip minify-html
 ```
 </details>
 
-Note: these steps need only be run once. To minify and copy files, first create
-an empty build directory in the root of this repository:
+To minify and copy files, first create an empty build directory in this
+repository's root:
 
 ```bash
 mkdir build
 ```
 
 Then run the script (making sure you have the Python virtual environment
-activated, and are in the root of this repository):
+activated, and are again in this repository's root):
 
 ```bash
 python build.py src build static
@@ -66,6 +68,19 @@ environment (and return back to your usual shell) with:
 ```bash
 deactivate
 ```
+
+
+## Deploying
+
+As a static site, only a web server capable of serving files is required. (In
+fact, you can run without a web server by loading `build/index.html` in your
+browser - only fetching the tectonic plate boundaries fails.) For deploying to
+Netlify, a file with HTTP headers is provided
+([`static/_headers`](static/_headers)) that has some sensible defaults (such as
+disabling embeds, not sending a referrer on external links, and disabling
+Google Chrome's browsing history ad-tracking). A
+[`robots.txt`](static/robots.txt) is also set up to disable OpenAI's GPTBot
+from scraping any text content.
 
 
 ## Contributing
