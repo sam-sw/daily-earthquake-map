@@ -11,9 +11,9 @@ its files. This repository has separated 'minifiable' files (HTML, CSS, JS,
 JSON, etc.) from 'static' files (images, Javascript libraries, etc.). To create
 a single directory that can be served with a web server, either:
 
-    1. Copy the contents of `src/` and `static/` to a chosen output directory.
-    2. Use the provided Python `build.py` script. This has the added benefit of
-        minifying source files.
+1. Copy the contents of `src/` and `static/` to a chosen output directory.
+2. Use the provided Python `build.py` script. This has the added benefit of
+    minifying source files.
 
 ### The Python `build.py` Script
 
@@ -28,21 +28,21 @@ python -m venv venv
 Then activate it, and install minify-html:
 
 <details>
-    <summary>Linux and macOS</summary>
+<summary>Linux and macOS</summary>
 
-    ```bash
-    source venv/bin/activate
-    python -m pip install --upgrade pip minify-html
-    ```
+```bash
+source venv/bin/activate
+python -m pip install --upgrade pip minify-html
+```
 </details>
 
 <details>
-    <summary>Windows</summary>
+<summary>Windows</summary>
 
-    ```batchfile
-    venv\Scripts\activate
-    python -m pip install --upgrade pip minify-html
-    ```
+```batchfile
+venv\Scripts\activate
+python -m pip install --upgrade pip minify-html
+```
 </details>
 
 Note: these steps need only be run once. To minify and copy files, first create
