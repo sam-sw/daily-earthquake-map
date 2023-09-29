@@ -1,5 +1,5 @@
 /*
-  X-Robots-Tag: noindex, nofollow
+  X-Robots-Tag: noindex, nofollow, noimageindex, noarchive, nocache, nosnippet, noai, noimageai
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer
   Permissions-Policy: interest-cohort=()
