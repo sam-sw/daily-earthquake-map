@@ -9,12 +9,13 @@ globe.
 
 Daily Earthquake Map is a static website, so only needs a web server to serve
 its files. This repository has separated 'minifiable' files (HTML, CSS, JS,
-JSON, etc.) from 'static' files (images, Javascript libraries, etc.). To create
+JSON, etc.) from 'static' files (images, JavaScript libraries, etc.). To create
 a single directory that can be served with a web server, either:
 
-1. Copy the contents of `src/` and `static/` to a chosen output directory.
-2. Use the provided Python `build.py` script. This has the added benefit of
-    minifying source files.
+1. Copy the contents of [`src/`](src/) and [`static/`](static/) to a chosen
+    output directory.
+2. Use the provided Python [`build.py`](build.py) script. This has the added
+    benefit of minifying source files.
 
 
 ### The Python `build.py` Script
@@ -74,20 +75,57 @@ deactivate
 
 As a static site, only a web server capable of serving files is required. (In
 fact, you can run without a web server by loading `build/index.html` in your
-browser - only fetching the tectonic plate boundaries fails.) For deploying to
-Netlify, a file with HTTP headers is provided
+browser &mdash; only fetching the tectonic plate boundaries fails.) For
+deploying to Netlify, a file with HTTP headers is provided
 ([`static/_headers`](static/_headers)) that has some sensible defaults (such as
 disabling embeds, not sending a referrer on external links, and disabling
 Google Chrome's browsing history ad-tracking). A
-[`robots.txt`](static/robots.txt) is also set up to disable OpenAI's GPTBot
+[`robots.txt`](static/robots.txt) is also set up to disable a variety of bots
 from scraping any text content.
 
 
-## Contributing
+## Acknowledgements
 
-TBC
+This software makes use of (and bundles) the following:
+
+* [Feather](https://github.com/feathericons/feather) icons, licensed under the
+    [MIT License](static/feather/LICENSE.txt);
+* [Inter](https://rsms.me/inter/) font, licensed under the
+    [SIL Open Font License, Version 1.1](static/inter/LICENSE.txt);
+* [Leaflet](https://leafletjs.com/) mapping library, licensed under the
+    [BSD 2-Clause License](static/leaflet/LICENSE.txt);
+* [World tectonic plates and boundaries](https://github.com/fraxen/tectonicplates),
+    licensed under the [ODC Attribution License](static/plates/LICENSE.txt).
+
+The software also loads and displays (but does not bundle) an
+[OpenStreetMap](https://www.openstreetmap.org/) basemap, Copyright ©
+[OpenStreetMap](https://www.openstreetmap.org/copyright) and contributors.
+The loaded
+[earthquake data](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+is courtesy of the [U.S. Geological Survey](https://usgs.gov).
 
 
 ## License
 
-TBC
+This software is available under the MIT license, copies of which are provided
+in [`LICENSE.md`](LICENSE.md) and as follows:
+
+Copyright © 2023 Samuel Wood
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the “Software”), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
