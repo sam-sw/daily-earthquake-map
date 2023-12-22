@@ -1,13 +1,28 @@
+User-agent: AdsBot-Google
+Disallow: /
+
+User-agent: AdsBot-Google-Mobile
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
 User-agent: CCBot
 Disallow: /
 
 User-agent: ChatGPT-User
 Disallow: /
 
+User-agent: FacebookBot
+Disallow: /
+
 User-agent: GPTBot
 Disallow: /
 
 User-agent: Google-Extended
+Disallow: /
+
+User-agent: Mediapartners-Google
 Disallow: /
 
 User-agent: Omgilibot
