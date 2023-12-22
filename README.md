@@ -2,7 +2,10 @@
 
 Live, minute-by-minute data from the [U.S. Geological Survey](https://usgs.gov)
 plotted on an interactive map, showing earthquakes from the last day across the
-globe.
+globe. Visit the map at [earthquakes.samwood.me](https://earthquakes.samwood.me)
+or by clicking on the screenshot below.
+
+[![A screenshot of the Daily Earthquake Map website. The world map is centred about 0° latitude, 0° longitude, with North pointing upwards. Open Street Map's default tiles are used for the basemap; the sea is a pale blue and the land is beige. Locations of recent seismic activity are marked with red circles. The bigger the circles, the stronger the seismic activity. The more opaque the circles, the more recent the seismic activity. Thick grey lines span the whole map, indicating the boundaries of tectonic plates; this demonstrates how seismic activity is more concentrated around these plate boundaries. Text in the upper-right-hand corner includes timestamps for the current data, the number of earthquakes from this update, and an accuracy disclaimer. Copyright and licensing information are shown at the bottom of the screen.](screenshot.png)](https://earthquakes.samwood.me)
 
 
 ## Building
