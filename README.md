@@ -107,6 +107,11 @@ The loaded
 [earthquake data](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
 is courtesy of the [U.S. Geological Survey](https://usgs.gov).
 
+The [build.py](build.py) script requires (but does not bundle)
+[minify-html](https://github.com/wilsonzlin/minify-html), currently available
+under the
+[MIT license](https://github.com/wilsonzlin/minify-html/blob/master/LICENSE).
+
 
 ## License
 
